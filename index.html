@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Ponto Seguro</title>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #2b0057, #0a0014);
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+}
+
+.wrapper {
+  width: 350px;
+  position: relative;
+}
+
+.card {
+  display: none;
+  padding: 25px;
+  border-radius: 20px;
+  background: linear-gradient(145deg, rgba(75,0,130,0.6), rgba(0,0,0,0.9));
+  box-shadow: 0 0 30px rgba(138,43,226,0.4);
+  text-align: center;
+}
+
+.active {
+  display: block;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.primary { background: #7b2cbf; color: white; }
+.secondary { background: transparent; border: 1px solid white; color: white; }
+.success { background: #00c853; }
+
+.danger {
+  background: #ff0055;
+  font-size: 18px;
+}
+
+.map {
+  height: 150px;
+  background: #1a1a1a;
+  border-radius: 10px;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+
+.camera {
+  height: 120px;
+  background: black;
+  margin-top: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.lista {
+  text-align: left;
+  max-height: 150px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<!-- HOME -->
+<div id="home" class="card active">
+  <h2>🛡️ Ponto Seguro</h2>
+  <button class="danger" onclick="irParaConfirmacao()">🚨 SOS</button>
+  <button class="secondary" onclick="verMapa()">📍 Ver localização</button>
+  <button class="secondary" onclick="verCamera()">📷 Câmeras</button>
+  <button class="secondary" onclick="listarAlertas()">📋 Alertas</button>
+</div>
+
+<!-- CONFIRMAÇÃO -->
+<div id="confirmacao" class="card">
+  <h2>Confirmar envio</h2>
+  <button class="primary" onclick="enviarAlerta()">Confirmar</button>
+  <button class="secondary" onclick="voltarHome()">Cancelar</button>
+</div>
+
+<!-- SUCESSO -->
+<div id="sucesso" class="card">
+  <h2>✅ Enviado</h2>
+  <p>Autoridades notificadas</p>
+  <button class="success" onclick="voltarHome()">Voltar</button>
+</div>
+
+<!-- MAPA -->
+<div id="mapa" class="card">
+  <h2>📍 Localização</h2>
+  <div class="map">
+    📍 Lat: -8.05<br>Long: -34.9
+  </div>
+  <button class="secondary" onclick="voltarHome()">Voltar</button>
+</div>
+
+<!-- CAMERA -->
+<div id="camera" class="card">
+  <h2>📷 Câmeras próximas</h2>
+  <div class="camera">
+    🎥 Transmissão ativa
+  </div>
+  <button class="secondary" onclick="voltarHome()">Voltar</button>
+</div>
+
+<!-- LISTA -->
+<div id="lista" class="card">
+  <h2>📋 Alertas</h2>
+  <div id="dados" class="lista"></div>
+  <button class="secondary" onclick="voltarHome()">Voltar</button>
+</div>
+
+</div>
+
+<script>
+function trocarTela(tela){
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+  document.getElementById(tela).classList.add('active');
+}
+
+function voltarHome(){ trocarTela('home'); }
+function irParaConfirmacao(){ trocarTela('confirmacao'); }
+function verMapa(){ trocarTela('mapa'); }
+function verCamera(){ trocarTela('camera'); }
+
+// salvar alerta
+function enviarAlerta(){
+  let alertas = JSON.parse(localStorage.getItem("alertas")) || [];
+
+  let novo = {
+    msg: "SOS enviado",
+    data: new Date().toLocaleString()
+  };
+
+  alertas.push(novo);
+  localStorage.setItem("alertas", JSON.stringify(alertas));
+
+  console.log("🚨 alerta salvo", novo);
+
+  trocarTela('sucesso');
+}
+
+// listar alertas
+function listarAlertas(){
+  let alertas = JSON.parse(localStorage.getItem("alertas")) || [];
+  let html = "";
+
+  alertas.forEach((a,i)=>{
+    html += `<p>#${i+1} - ${a.msg}<br>${a.data}</p>`;
+  });
+
+  document.getElementById("dados").innerHTML = html || "Nenhum alerta.";
+  trocarTela('lista');
+}
+</script>
+
+</body>
+</html>
